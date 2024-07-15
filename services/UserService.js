@@ -102,6 +102,56 @@ const deleteUser = async (id) => {
     };
 }
 
+const bulkCreateUsers = async (query) =>{
+    let successCount = 0;
+    let failureCount = 0;
+
+    
+}
+
+const getAllUsers = async () => {
+    console.log('Esta funcionando...');
+
+    const users = await db.user.findAll({
+        where: {
+            status: true
+        }
+    });
+    return {
+        code: 200,
+        masssage: users
+    };
+}
+
+const findUsers = async (query) => {
+    const whereCluse = {};
+    if(query.eliminated !== undefined){
+        whereCluse.status = query.eliminated === 'false';
+    }
+    if(query.name){
+        whereCluse.name = {
+            [db.Sequelize.Op.like]: `%${query.name}%`
+        }
+    }
+    if(query.loggedInBefore){
+        whereCluse.lastLogin = {
+            [db.Sequelize.Op.lt]: new Date(loggedInBefore)
+        }
+    }
+    if(query.loggedInAfter){
+        whereCluse.lastLogin = {
+            [db.Sequelize.Op.gt]: new Date(loggedInAfter)
+        }
+    }
+
+    return {
+        code: 200,
+        message: await db.User.findAll({
+            where: filtroWhere
+        })
+    }
+}
+
 export default {
     createUser,
     getUserById,
