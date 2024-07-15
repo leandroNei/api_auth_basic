@@ -1,5 +1,6 @@
 import db from '../dist/db/models/index.js';
 import bcrypt from 'bcrypt';
+import { where } from 'sequelize';
 
 const createUser = async (req) => {
     const {
@@ -102,14 +103,14 @@ const deleteUser = async (id) => {
     };
 }
 
-const bulkCreateUsers = async (usersList) =>{
+const bulkCreate = async (usersList) =>{
     let exito = 0;
     let fallo = 0;
 
-    for(const usuario of usersList) {
-        const { name, email, password, cellphone} = usuario;
+    for(const user of usersList) {
+        const { name, email, password, cellphone} = user;
         try {
-            const existingUser = await db.User.findOne({where:{email}});
+            const existingUser = await db.user.findOne({where:{email}});
         
 
             if(existingUser){
@@ -120,7 +121,7 @@ const bulkCreateUsers = async (usersList) =>{
             const encryptedPassword = await bcrypt.hash(password,10);
 
             try {
-                await db.User.create({
+                await db.user.create({
                     name,
                     email,
                     password: encryptedPassword,
@@ -136,11 +137,11 @@ const bulkCreateUsers = async (usersList) =>{
             console.error('A occurrido un problema al crear el usuario', error);
             fallo++;
         }
-        return{
-            code: 200, 
-            masssage: `Usuarios creados correctamente: ${exito}, Usuarios fallidos: ${fallo}` 
-        };
     }
+    return{
+        code: 200, 
+        masssage: `Usuarios creados correctamente: ${exito}, Usuarios fallidos: ${fallo}` 
+    };
 }
 
 const getAllUsers = async () => {
@@ -188,7 +189,7 @@ const findUsers = async (query) => {
 
 export default {
     getAllUsers,
-    bulkCreateUsers,
+    bulkCreate,
     findUsers,
     createUser,
     getUserById,
