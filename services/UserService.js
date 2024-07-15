@@ -106,40 +106,73 @@ const bulkCreateUsers = async (query) =>{
     let successCount = 0;
     let failureCount = 0;
 
-    
+    for(const usuario of userList) {
+        const { name, email, password, cellphone} = usuario;
+        try {
+            const existingUser = await db.User.findOne({where:{email}});
+        
+
+            if(existingUser){
+                failureCount++;
+                continue;
+
+            const encryptedPassword = await bcrypt.hash(password,10);
+
+            try {
+                await db.User.create({
+                    name,
+                    enail,
+                    password: encryptedPassword,
+                    cellphone,
+                    status: true
+                });
+                successCount++;
+            }catch (error){
+                console.error('A occurrido un problema al crear el usuario', error);
+                failureCount++;
+            }
+        }catch(error){
+            console.error('A occurrido un problema al crear el usuario', error);
+            failureCount++;
+        }
+        return{
+            code: 200, 
+            masssage: `Usuarios creados correctamente: ${successCount}, Usuarios fallidos: ${failureCount}` 
+        };
+    }
 }
 
 const getAllUsers = async () => {
     console.log('Esta funcionando...');
 
-    const users = await db.user.findAll({
+    const usuarios = await db.User.findAll({
         where: {
             status: true
         }
     });
     return {
         code: 200,
-        masssage: users
+        masssage: usuarios
     };
 }
 
 const findUsers = async (query) => {
-    const whereCluse = {};
+    const filtro = {};
     if(query.eliminated !== undefined){
-        whereCluse.status = query.eliminated === 'false';
+        filtro.status = query.eliminated === 'false';
     }
     if(query.name){
-        whereCluse.name = {
+        filtro.name = {
             [db.Sequelize.Op.like]: `%${query.name}%`
         }
     }
     if(query.loggedInBefore){
-        whereCluse.lastLogin = {
+        filtro.lastLogin = {
             [db.Sequelize.Op.lt]: new Date(loggedInBefore)
         }
     }
     if(query.loggedInAfter){
-        whereCluse.lastLogin = {
+        filtro.lastLogin = {
             [db.Sequelize.Op.gt]: new Date(loggedInAfter)
         }
     }
@@ -147,12 +180,15 @@ const findUsers = async (query) => {
     return {
         code: 200,
         message: await db.User.findAll({
-            where: filtroWhere
+            where: filtro
         })
     }
 }
 
 export default {
+    getAllUsers,
+    bulkCreateUsers,
+    findUsers,
     createUser,
     getUserById,
     updateUser,

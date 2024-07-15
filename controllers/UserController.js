@@ -17,7 +17,7 @@ router.get('/findUsers', async (req, res) => {
 });
 
 router.get('/bulkCreate', async (req, res) => {
-    const response = await UserService.bulkCreateUsers(req.body.users);
+    const response = await UserService.bulkCreateUsers(req.body.usersList);
     res.status(response.code).json(response.message);
 });
 
