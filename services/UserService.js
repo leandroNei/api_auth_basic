@@ -102,7 +102,7 @@ const deleteUser = async (id) => {
     };
 }
 
-const bulkCreateUsers = async (query) =>{
+const bulkCreateUsers = async (userList) =>{
     let successCount = 0;
     let failureCount = 0;
 
