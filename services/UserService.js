@@ -115,6 +115,7 @@ const bulkCreateUsers = async (query) =>{
             if(existingUser){
                 failureCount++;
                 continue;
+            }
 
             const encryptedPassword = await bcrypt.hash(password,10);
 
