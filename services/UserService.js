@@ -102,18 +102,18 @@ const deleteUser = async (id) => {
     };
 }
 
-const bulkCreateUsers = async (userList) =>{
-    let successCount = 0;
-    let failureCount = 0;
+const bulkCreateUsers = async (usersList) =>{
+    let exito = 0;
+    let fallo = 0;
 
-    for(const usuario of userList) {
+    for(const usuario of usersList) {
         const { name, email, password, cellphone} = usuario;
         try {
             const existingUser = await db.User.findOne({where:{email}});
         
 
             if(existingUser){
-                failureCount++;
+                fallo++;
                 continue;
             }
 
@@ -122,23 +122,23 @@ const bulkCreateUsers = async (userList) =>{
             try {
                 await db.User.create({
                     name,
-                    enail,
+                    email,
                     password: encryptedPassword,
                     cellphone,
                     status: true
                 });
-                successCount++;
+                exito++;
             }catch (error){
                 console.error('A occurrido un problema al crear el usuario', error);
-                failureCount++;
+                fallo++;
             }
         }catch(error){
             console.error('A occurrido un problema al crear el usuario', error);
-            failureCount++;
+            fallo++;
         }
         return{
             code: 200, 
-            masssage: `Usuarios creados correctamente: ${successCount}, Usuarios fallidos: ${failureCount}` 
+            masssage: `Usuarios creados correctamente: ${exito}, Usuarios fallidos: ${fallo}` 
         };
     }
 }
